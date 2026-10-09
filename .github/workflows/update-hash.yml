@@ -35,22 +35,38 @@ jobs:
           git commit -m "chore: update pricing sha256"
           git push
 
-      # jsDelivr 镜像对分支文件缓存约 12 小时，推送后主动刷新。
-      # 先刷 JSON 再刷 sha256，并校验镜像上的 sha256 已更新，避免镜像先给出新哈希、旧 JSON。
+      # jsDelivr 镜像对分支文件缓存约 12 小时，推送后尽量主动刷新（尽力而为）。
+      # purge 接口每个路径约 1 小时只能刷新一次，所以每个文件只刷一次，不循环重刷。
+      # 先确认 JSON 已是新内容再刷 sha256，避免镜像给出"新哈希 + 旧 JSON"。
       - name: Purge jsDelivr cache
         if: github.event_name != 'pull_request'
         run: |
           base="gh/${GITHUB_REPOSITORY}@main"
           want=$(cat model_prices_and_context_window.sha256)
-          for i in 1 2 3 4 5; do
-            sleep 20
-            curl -fsS "https://purge.jsdelivr.net/${base}/model_prices_and_context_window.json" >/dev/null || true
-            curl -fsS "https://purge.jsdelivr.net/${base}/model_prices_and_context_window.sha256" >/dev/null || true
-            got=$(curl -fsS "https://cdn.jsdelivr.net/${base}/model_prices_and_context_window.sha256" || true)
-            if [ "$(echo "$got" | tr -d '[:space:]')" = "$want" ]; then
-              echo "jsDelivr up to date: $want"
-              exit 0
+
+          purge() {
+            resp=$(curl -fsS "https://purge.jsdelivr.net/${base}/$1" || echo '{}')
+            if echo "$resp" | jq -e '[.paths[]?.throttled] | any' >/dev/null; then
+              echo "::warning::jsDelivr purge throttled for $1: $(echo "$resp" | jq -c '.paths')"
             fi
-            echo "attempt $i: jsDelivr still serves '${got}', retrying"
-          done
-          echo "::warning::jsDelivr cache not refreshed; it will catch up within ~12h"
+          }
+
+          wait_for() {  # $1 文件名，$2 期望的 sha256（对文件内容求哈希后比较）
+            for i in 1 2 3 4 5 6; do
+              sleep 20
+              got=$(curl -fsS "https://cdn.jsdelivr.net/${base}/$1" | sha256sum | cut -d' ' -f1)
+              [ "$got" = "$2" ] && { echo "jsDelivr serves new $1"; return 0; }
+              echo "attempt $i: $1 not refreshed yet"
+            done
+            return 1
+          }
+
+          purge model_prices_and_context_window.json
+          if ! wait_for model_prices_and_context_window.json "$want"; then
+            echo "::warning::jsDelivr JSON not refreshed; skip sha256 purge. Mirror catches up within ~12h"
+            exit 0
+          fi
+          purge model_prices_and_context_window.sha256
+          want_hash_file=$(sha256sum model_prices_and_context_window.sha256 | cut -d' ' -f1)
+          wait_for model_prices_and_context_window.sha256 "$want_hash_file" \
+            || echo "::warning::jsDelivr sha256 not refreshed; mirror catches up within ~12h"

@@ -25,7 +25,15 @@ pricing:
   hash_url: "https://cdn.jsdelivr.net/gh/66neko/model-price-repo@main/model_prices_and_context_window.sha256"
 ```
 
-`cdn.jsdelivr.net` 也可以换成 `fastly.jsdelivr.net` 或 `testingcf.jsdelivr.net`，内容相同，哪个快用哪个。jsDelivr 对分支文件缓存约 12 小时，推送后 GitHub Action 会主动刷新镜像缓存，正常几分钟内生效。如果开了 `security.url_allowlist.enabled`，要把所用域名加进 `pricing_hosts`。
+`cdn.jsdelivr.net` 也可以换成 `fastly.jsdelivr.net` 或 `testingcf.jsdelivr.net`。如果开了 `security.url_allowlist.enabled`，要把所用域名加进 `pricing_hosts`。
+
+jsDelivr 的限制（实测）：
+
+- 分支文件缓存约 12 小时，三个域名各自缓存，同一时刻可能给出不同版本。
+- 推送后 GitHub Action 会尝试刷新缓存，但 purge 接口每个路径约 1 小时只能刷一次，被限流时刷新无效。所以**新价格最长约 12 小时才在镜像上生效**。
+- JSON 和 sha256 是两个独立缓存。极少数情况下镜像会先给出新 sha256、旧 JSON，sub2api 会记录 `Hash mismatch warning` 并停在旧价格。等镜像上的 JSON 也更新后，**重启 sub2api 即可恢复**（启动时按本地数据重新计算哈希，与远程不一致就重新下载）。
+
+对价格时效要求高时，优先用 raw.githubusercontent.com 配合代理（`UPDATE_PROXY_URL`），它没有这些缓存问题。
 
 - 仓库必须公开（sub2api 下载时不带认证）。
 - 文件里至少要有一个有效条目，否则整份目录被视为无效。
