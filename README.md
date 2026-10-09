@@ -47,6 +47,13 @@ pricing:
 }
 ```
 
+### 条目顺序
+
+- **越新的模型越靠前**：新增模型插在文件头部，不要追加到末尾。
+- 同一系列内也是新版本在前，例如 `claude-opus-5-5` 在 `claude-opus-5` 前面。
+- 顺序只影响可读性和维护，sub2api 查价按键名匹配，与顺序无关。
+- 例外：文件末尾的 `gpt-5.5`、`deepseek-v4-flash`、`claude-haiku-4-5-20251001`、`claude-opus-4-8` 是 2026-10-09 一次性补录的老模型，保留在末尾。之后的新模型仍然加在头部。
+
 ### 模型名
 
 - 用小写。sub2api 查价时先把请求的模型名转成小写再精确匹配；含大写的键只能靠较慢的模糊匹配命中。
@@ -166,14 +173,14 @@ pricing:
 - 有人民币官方价的提供商（DeepSeek、智谱、Moonshot）以国内站人民币价为准，按 **1 美元 = 7 元** 换算成美元写入。
 - 只有美元价的提供商（Anthropic、OpenAI、xAI）直接使用官方美元价。
 - 有峰谷价的统一使用**高峰期价格**。
-- 已退役或已有新版本替代的旧模型不收录（如 glm-5.1 及以前、claude-opus-4-8 及以前、gpt-5.5）。
+- 已退役或已有新版本替代的旧模型默认不收录（如 glm-5.1 及以前、claude-opus-4-7 及以前）。仍有调用需求的老模型可以按需补录，见上面的"条目顺序"。
 
 | 提供商 | 来源 | 备注 |
 | --- | --- | --- |
 | Anthropic | https://platform.claude.com/docs/en/about-claude/pricing | Fable 5.1 缓存读取为 0.025×，Opus 5.5 / Sonnet 5.5 为 0.05×，其余 0.1×。Haiku 5.5 提示超过 100K token（含缓存读写）后整次请求所有计费项 ×5 |
 | OpenAI | https://developers.openai.com/api/docs/pricing | Priority 已更名 Fast；GPT-5.6 Sol 为促销价，至少持续到 2026-11-21 |
 | xAI | https://docs.x.ai/developers/pricing | ≥200k 输入进高档 |
-| DeepSeek | https://api-docs.deepseek.com/zh-cn/quick_start/pricing | 高峰价（北京时间工作日 9:00–12:00、14:00–18:00）。flash ¥2 / ¥0.04 / ¥8，v4-pro ¥9 / ¥0.30 / ¥27 |
+| DeepSeek | https://api-docs.deepseek.com/zh-cn/quick_start/pricing | 高峰价（北京时间工作日 9:00–12:00、14:00–18:00）。flash ¥2 / ¥0.04 / ¥8，v4-pro ¥9 / ¥0.30 / ¥27。`deepseek-v4-flash` 是已退役的旧模型名，官方仍接受调用并按 Flash 价计费，价格同 `deepseek-flash` |
 | 智谱 | https://docs.bigmodel.cn/cn/guide/start/pricing | 国内站人民币价。glm-5.3 / glm-5.2 ¥8 / ¥2 / ¥28，glm-5.3-flash ¥0.8 / ¥0.23 / ¥2.8 |
 | Moonshot | https://platform.kimi.com/docs/pricing/chat | kimi-k3 ¥20 / 缓存命中 ¥2 / ¥100，缓存写入 5min ¥20、1h ¥40 |
 
