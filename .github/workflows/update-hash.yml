@@ -34,3 +34,23 @@ jobs:
           git add model_prices_and_context_window.sha256
           git commit -m "chore: update pricing sha256"
           git push
+
+      # jsDelivr 镜像对分支文件缓存约 12 小时，推送后主动刷新。
+      # 先刷 JSON 再刷 sha256，并校验镜像上的 sha256 已更新，避免镜像先给出新哈希、旧 JSON。
+      - name: Purge jsDelivr cache
+        if: github.event_name != 'pull_request'
+        run: |
+          base="gh/${GITHUB_REPOSITORY}@main"
+          want=$(cat model_prices_and_context_window.sha256)
+          for i in 1 2 3 4 5; do
+            sleep 20
+            curl -fsS "https://purge.jsdelivr.net/${base}/model_prices_and_context_window.json" >/dev/null || true
+            curl -fsS "https://purge.jsdelivr.net/${base}/model_prices_and_context_window.sha256" >/dev/null || true
+            got=$(curl -fsS "https://cdn.jsdelivr.net/${base}/model_prices_and_context_window.sha256" || true)
+            if [ "$(echo "$got" | tr -d '[:space:]')" = "$want" ]; then
+              echo "jsDelivr up to date: $want"
+              exit 0
+            fi
+            echo "attempt $i: jsDelivr still serves '${got}', retrying"
+          done
+          echo "::warning::jsDelivr cache not refreshed; it will catch up within ~12h"

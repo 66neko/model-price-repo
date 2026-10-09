@@ -17,6 +17,16 @@ pricing:
 
 或环境变量 `PRICING_REMOTE_URL` / `PRICING_HASH_URL`。修改这两个配置需要重启 sub2api；之后仓库内容变化会在下一次哈希检查（默认 10 分钟）自动生效。
 
+### 访问不了 raw.githubusercontent.com 时：用 jsDelivr 镜像
+
+```yaml
+pricing:
+  remote_url: "https://cdn.jsdelivr.net/gh/66neko/model-price-repo@main/model_prices_and_context_window.json"
+  hash_url: "https://cdn.jsdelivr.net/gh/66neko/model-price-repo@main/model_prices_and_context_window.sha256"
+```
+
+`cdn.jsdelivr.net` 也可以换成 `fastly.jsdelivr.net` 或 `testingcf.jsdelivr.net`，内容相同，哪个快用哪个。jsDelivr 对分支文件缓存约 12 小时，推送后 GitHub Action 会主动刷新镜像缓存，正常几分钟内生效。如果开了 `security.url_allowlist.enabled`，要把所用域名加进 `pricing_hosts`。
+
 - 仓库必须公开（sub2api 下载时不带认证）。
 - 文件里至少要有一个有效条目，否则整份目录被视为无效。
 - 本目录中**没有**的模型由 sub2api 本地 `fallback_file` 补齐；本目录中**有**的模型会整条替换 fallback 里的同名条目（不是逐字段合并），所以写一个模型就要把它需要的价格字段写全。
