@@ -1,0 +1,36 @@
+name: Validate and update hash
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - model_prices_and_context_window.json
+  pull_request:
+    paths:
+      - model_prices_and_context_window.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  hash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON and regenerate sha256
+        run: bash scripts/update-hash.sh
+
+      - name: Commit sha256 if changed
+        if: github.event_name != 'pull_request'
+        run: |
+          if git diff --quiet -- model_prices_and_context_window.sha256; then
+            echo "hash up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add model_prices_and_context_window.sha256
+          git commit -m "chore: update pricing sha256"
+          git push
