@@ -286,73 +286,6 @@
     "output_cost_per_token": 3.857142857e-06,
     "cache_read_input_token_cost": 4.285714286e-08
   },
-  "glm-5.1": {
-    "litellm_provider": "zai",
-    "mode": "chat",
-    "input_cost_per_token": 8.571428571e-07,
-    "output_cost_per_token": 3.428571429e-06,
-    "cache_read_input_token_cost": 1.857142857e-07,
-    "long_context_input_token_threshold": 32000,
-    "long_context_input_cost_multiplier": 1.333333,
-    "long_context_output_cost_multiplier": 1.166667
-  },
-  "glm-5": {
-    "litellm_provider": "zai",
-    "mode": "chat",
-    "input_cost_per_token": 5.714285714e-07,
-    "output_cost_per_token": 2.571428571e-06,
-    "cache_read_input_token_cost": 1.428571429e-07,
-    "long_context_input_token_threshold": 32000,
-    "long_context_input_cost_multiplier": 1.5,
-    "long_context_output_cost_multiplier": 1.222222
-  },
-  "gpt-5.5": {
-    "cache_read_input_token_cost": 5e-07,
-    "cache_read_input_token_cost_above_272k_tokens": 1e-06,
-    "input_cost_per_token": 5e-06,
-    "input_cost_per_token_above_272k_tokens": 1e-05,
-    "output_cost_per_token": 3e-05,
-    "output_cost_per_token_above_272k_tokens": 4.5e-05,
-    "input_cost_per_token_priority": 1.25e-05,
-    "output_cost_per_token_priority": 7.5e-05,
-    "cache_read_input_token_cost_priority": 1.25e-06,
-    "litellm_provider": "openai",
-    "mode": "chat"
-  },
-  "glm-4.6": {
-    "input_cost_per_token": 6e-07,
-    "output_cost_per_token": 2.2e-06,
-    "cache_read_input_token_cost": 1.1e-07,
-    "litellm_provider": "zai",
-    "mode": "chat"
-  },
-  "glm-4.7": {
-    "litellm_provider": "zai",
-    "mode": "chat",
-    "input_cost_per_token": 4.285714286e-07,
-    "output_cost_per_token": 2e-06,
-    "cache_read_input_token_cost": 8.571428571e-08,
-    "long_context_input_token_threshold": 32000,
-    "long_context_input_cost_multiplier": 1.333333,
-    "long_context_output_cost_multiplier": 1.142857
-  },
-  "glm-4.5-air": {
-    "litellm_provider": "zai",
-    "mode": "chat",
-    "input_cost_per_token": 1.142857143e-07,
-    "output_cost_per_token": 8.571428571e-07,
-    "cache_read_input_token_cost": 2.285714286e-08,
-    "long_context_input_token_threshold": 32000,
-    "long_context_input_cost_multiplier": 1.5,
-    "long_context_output_cost_multiplier": 1.333333
-  },
-  "glm-4.7-flash": {
-    "input_cost_per_token": 0.0,
-    "output_cost_per_token": 0.0,
-    "cache_read_input_token_cost": 0.0,
-    "litellm_provider": "zai",
-    "mode": "chat"
-  },
   "claude-opus-5": {
     "cache_creation_input_token_cost": 6.25e-06,
     "cache_creation_input_token_cost_above_1hr": 1e-05,
@@ -374,45 +307,6 @@
     "output_cost_per_token_priority": 5e-05,
     "cache_creation_input_token_cost_priority": 1.25e-05,
     "cache_read_input_token_cost_priority": 1e-06
-  },
-  "claude-opus-4-8": {
-    "cache_creation_input_token_cost": 6.25e-06,
-    "cache_creation_input_token_cost_above_1hr": 1e-05,
-    "cache_read_input_token_cost": 5e-07,
-    "input_cost_per_token": 5e-06,
-    "litellm_provider": "anthropic",
-    "mode": "chat",
-    "output_cost_per_token": 2.5e-05,
-    "provider_specific_entry": {
-      "fast": 2.0,
-      "us": 1.1
-    },
-    "search_context_cost_per_query": {
-      "search_context_size_high": 0.01,
-      "search_context_size_low": 0.01,
-      "search_context_size_medium": 0.01
-    },
-    "input_cost_per_token_priority": 1e-05,
-    "output_cost_per_token_priority": 5e-05,
-    "cache_creation_input_token_cost_priority": 1.25e-05,
-    "cache_read_input_token_cost_priority": 1e-06
-  },
-  "claude-opus-4-7": {
-    "cache_creation_input_token_cost": 6.25e-06,
-    "cache_creation_input_token_cost_above_1hr": 1e-05,
-    "cache_read_input_token_cost": 5e-07,
-    "input_cost_per_token": 5e-06,
-    "litellm_provider": "anthropic",
-    "mode": "chat",
-    "output_cost_per_token": 2.5e-05,
-    "provider_specific_entry": {
-      "us": 1.1
-    },
-    "search_context_cost_per_query": {
-      "search_context_size_high": 0.01,
-      "search_context_size_low": 0.01,
-      "search_context_size_medium": 0.01
-    }
   },
   "claude-haiku-5-5": {
     "litellm_provider": "anthropic",

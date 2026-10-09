@@ -63,7 +63,7 @@ pricing:
 
 没写的计费项按 0 计。例如只写了 `cache_read_input_token_cost` 而没写 `cache_creation_input_token_cost`，缓存写入就不收费。
 
-免费模型要显式写 0（如 `glm-4.7-flash`），不能整条留空，否则条目会被忽略并回落到 fallback。
+免费模型要显式写 0，不能整条留空，否则条目会被忽略并回落到 fallback。
 
 ### 分时计价（峰谷价）
 
@@ -156,7 +156,7 @@ pricing:
 - 有人民币官方价的提供商（DeepSeek、智谱、Moonshot）以国内站人民币价为准，按 **1 美元 = 7 元** 换算成美元写入。
 - 只有美元价的提供商（Anthropic、OpenAI、xAI）直接使用官方美元价。
 - 有峰谷价的统一使用**高峰期价格**。
-- 已退役的模型不收录。
+- 已退役或已有新版本替代的旧模型不收录（如 glm-5.1 及以前、claude-opus-4-8 及以前、gpt-5.5）。
 
 | 提供商 | 来源 | 备注 |
 | --- | --- | --- |
@@ -164,24 +164,8 @@ pricing:
 | OpenAI | https://developers.openai.com/api/docs/pricing | Priority 已更名 Fast；GPT-5.6 Sol 为促销价，至少持续到 2026-11-21 |
 | xAI | https://docs.x.ai/developers/pricing | ≥200k 输入进高档 |
 | DeepSeek | https://api-docs.deepseek.com/zh-cn/quick_start/pricing | 高峰价（北京时间工作日 9:00–12:00、14:00–18:00）。flash ¥2 / ¥0.04 / ¥8，v4-pro ¥9 / ¥0.30 / ¥27 |
-| 智谱 | https://docs.bigmodel.cn/cn/guide/start/pricing | 国内站人民币价。GLM-4.6 国内站未列按量价格，暂沿用原值 |
+| 智谱 | https://docs.bigmodel.cn/cn/guide/start/pricing | 国内站人民币价。glm-5.3 / glm-5.2 ¥8 / ¥2 / ¥28，glm-5.3-flash ¥0.8 / ¥0.23 / ¥2.8 |
 | Moonshot | https://platform.kimi.com/docs/pricing/chat | kimi-k3 ¥20 / 缓存命中 ¥2 / ¥100，缓存写入 5min ¥20、1h ¥40 |
-
-### 智谱分段价的表达
-
-智谱部分模型按输入长度分段，用"阈值 + 倍率"表达（阈值 32000）：
-
-| 模型 | 输入 <32K（输入 / 缓存命中 / 输出） | 输入 ≥32K | 倍率（输入 / 输出） |
-| --- | --- | --- | --- |
-| glm-5.1 | ¥6 / ¥1.3 / ¥24 | ¥8 / ¥2 / ¥28 | 1.333 / 1.167 |
-| glm-5 | ¥4 / ¥1 / ¥18 | ¥6 / ¥1.5 / ¥22 | 1.5 / 1.222 |
-| glm-4.7 | ¥3 / ¥0.6 / ¥14 | ¥4 / ¥0.8 / ¥16 | 1.333 / 1.143 |
-| glm-4.5-air | ¥0.8 / ¥0.16 / ¥6 | ¥1.2 / ¥0.24 / ¥8 | 1.5 / 1.333 |
-
-两个已知偏差：
-
-- glm-4.7、glm-4.5-air 在"输入 <32K 且输出 <0.2K"时还有更便宜的一档（¥2 / ¥0.4 / ¥8、¥0.8 / ¥0.16 / ¥2），按输出长度分档无法表达，目录统一写输出 ≥0.2K 档。
-- sub2api 高档缓存价 = 缓存基础价 × 输入倍率。glm-5.1 高档缓存实际 ¥2，按倍率算是 ¥1.73，少收约 13%；其余模型一致。
 
 ## 完整示例
 
