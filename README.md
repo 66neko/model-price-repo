@@ -160,7 +160,7 @@ pricing:
 
 | 提供商 | 来源 | 备注 |
 | --- | --- | --- |
-| Anthropic | https://platform.claude.com/docs/en/about-claude/pricing | Fable 5.1 缓存读取为 0.025×，Opus 5.5 / Sonnet 5.5 为 0.05×，其余 0.1× |
+| Anthropic | https://platform.claude.com/docs/en/about-claude/pricing | Fable 5.1 缓存读取为 0.025×，Opus 5.5 / Sonnet 5.5 为 0.05×，其余 0.1×。Haiku 5.5 提示超过 100K token（含缓存读写）后整次请求所有计费项 ×5 |
 | OpenAI | https://developers.openai.com/api/docs/pricing | Priority 已更名 Fast；GPT-5.6 Sol 为促销价，至少持续到 2026-11-21 |
 | xAI | https://docs.x.ai/developers/pricing | ≥200k 输入进高档 |
 | DeepSeek | https://api-docs.deepseek.com/zh-cn/quick_start/pricing | 高峰价（北京时间工作日 9:00–12:00、14:00–18:00）。flash ¥2 / ¥0.04 / ¥8，v4-pro ¥9 / ¥0.30 / ¥27 |
