@@ -40,7 +40,7 @@ pricing:
 ### 模型名
 
 - 用小写。sub2api 查价时先把请求的模型名转成小写再精确匹配；含大写的键只能靠较慢的模糊匹配命中。
-- 末尾的 8 位日期（如 `-20250219`）在模糊匹配时会被忽略，`claude-3-7-sonnet` 也能命中 `claude-3-7-sonnet-20250219`。
+- 末尾的 8 位日期（如 `-20250219`）在模糊匹配时会被忽略，例如请求 `claude-opus-5-20260101` 也能命中 `claude-opus-5`。
 
 ### 元信息
 
@@ -67,7 +67,7 @@ pricing:
 
 ### 分时计价（峰谷价）
 
-本目录无法表达按时段变化的价格。DeepSeek 这类有峰谷价的模型，目录里统一写**高峰价**（避免少收），谷时折扣在 sub2api 后台渠道的"分时倍率"里配置（如谷时 ×0.5）。
+本目录无法表达按时段变化的价格。DeepSeek 这类有峰谷价的模型，目录里统一写**高峰价**。如需谷时折扣，在 sub2api 后台渠道的"分时倍率"里配置（如谷时 ×0.5）。
 
 ### 服务档（priority / flex / batch）
 
@@ -151,16 +151,37 @@ pricing:
 
 ## 价格来源
 
-当前数据按以下官方页面核对（2026-10-09），以美元国际站价格为准：
+当前数据按以下官方页面核对（2026-10-09）。约定：
+
+- 有人民币官方价的提供商（DeepSeek、智谱、Moonshot）以国内站人民币价为准，按 **1 美元 = 7 元** 换算成美元写入。
+- 只有美元价的提供商（Anthropic、OpenAI、xAI）直接使用官方美元价。
+- 有峰谷价的统一使用**高峰期价格**。
+- 已退役的模型不收录。
 
 | 提供商 | 来源 | 备注 |
 | --- | --- | --- |
 | Anthropic | https://platform.claude.com/docs/en/about-claude/pricing | Fable 5.1 缓存读取为 0.025×，Opus 5.5 / Sonnet 5.5 为 0.05×，其余 0.1× |
 | OpenAI | https://developers.openai.com/api/docs/pricing | Priority 已更名 Fast；GPT-5.6 Sol 为促销价，至少持续到 2026-11-21 |
 | xAI | https://docs.x.ai/developers/pricing | ≥200k 输入进高档 |
-| DeepSeek | https://api-docs.deepseek.com/quick_start/pricing | 写高峰价；`deepseek-v4-flash`、`deepseek-v4-flash-vision-exp` 已退役，按 Flash 价计费 |
-| Z.AI | https://docs.z.ai/guides/overview/pricing | 国际站价格，与国内站 bigmodel.cn 的人民币价不同 |
-| Moonshot | 多个第三方汇总页一致（$3 / $0.30 / $15），未直接取到官方页 | Kimi K3 全上下文统一价，官方 ID `kimi-k3` |
+| DeepSeek | https://api-docs.deepseek.com/zh-cn/quick_start/pricing | 高峰价（北京时间工作日 9:00–12:00、14:00–18:00）。flash ¥2 / ¥0.04 / ¥8，v4-pro ¥9 / ¥0.30 / ¥27 |
+| 智谱 | https://docs.bigmodel.cn/cn/guide/start/pricing | 国内站人民币价。GLM-4.6 国内站未列按量价格，暂沿用原值 |
+| Moonshot | https://platform.kimi.com/docs/pricing/chat | kimi-k3 ¥20 / 缓存命中 ¥2 / ¥100，缓存写入 5min ¥20、1h ¥40 |
+
+### 智谱分段价的表达
+
+智谱部分模型按输入长度分段，用"阈值 + 倍率"表达（阈值 32000）：
+
+| 模型 | 输入 <32K（输入 / 缓存命中 / 输出） | 输入 ≥32K | 倍率（输入 / 输出） |
+| --- | --- | --- | --- |
+| glm-5.1 | ¥6 / ¥1.3 / ¥24 | ¥8 / ¥2 / ¥28 | 1.333 / 1.167 |
+| glm-5 | ¥4 / ¥1 / ¥18 | ¥6 / ¥1.5 / ¥22 | 1.5 / 1.222 |
+| glm-4.7 | ¥3 / ¥0.6 / ¥14 | ¥4 / ¥0.8 / ¥16 | 1.333 / 1.143 |
+| glm-4.5-air | ¥0.8 / ¥0.16 / ¥6 | ¥1.2 / ¥0.24 / ¥8 | 1.5 / 1.333 |
+
+两个已知偏差：
+
+- glm-4.7、glm-4.5-air 在"输入 <32K 且输出 <0.2K"时还有更便宜的一档（¥2 / ¥0.4 / ¥8、¥0.8 / ¥0.16 / ¥2），按输出长度分档无法表达，目录统一写输出 ≥0.2K 档。
+- sub2api 高档缓存价 = 缓存基础价 × 输入倍率。glm-5.1 高档缓存实际 ¥2，按倍率算是 ¥1.73，少收约 13%；其余模型一致。
 
 ## 完整示例
 
