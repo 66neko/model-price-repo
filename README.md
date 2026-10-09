@@ -63,6 +63,12 @@ pricing:
 
 没写的计费项按 0 计。例如只写了 `cache_read_input_token_cost` 而没写 `cache_creation_input_token_cost`，缓存写入就不收费。
 
+免费模型要显式写 0（如 `glm-4.7-flash`），不能整条留空，否则条目会被忽略并回落到 fallback。
+
+### 分时计价（峰谷价）
+
+本目录无法表达按时段变化的价格。DeepSeek 这类有峰谷价的模型，目录里统一写**高峰价**（避免少收），谷时折扣在 sub2api 后台渠道的"分时倍率"里配置（如谷时 ×0.5）。
+
 ### 服务档（priority / flex / batch）
 
 服务档后缀直接加在对应字段后面：
@@ -135,11 +141,26 @@ pricing:
 | --- | --- |
 | `search_context_cost_per_query` | 联网搜索的每次价格，按 `search_context_size_low/medium/high` 区分 |
 | `regional_processing_uplift_multiplier_eu/us` | 区域处理加价倍率 |
-| `provider_specific_entry` | 提供商特定倍率，如 `fast`（快速模式）、`us`（美区） |
+| `provider_specific_entry` | 提供商特定倍率，如 `fast`（快速模式，相对标准价）、`us`（美区数据驻留） |
+
+注意：Anthropic 的 fast mode 在 sub2api 中按 `_priority` 字段计费，`provider_specific_entry.fast` 只是参考。支持 fast mode 的模型要同时写上 `*_priority` 价格。
 
 ### 不要放进来的字段
 
 模型能力和元数据与价格无关，不放进本目录：`max_tokens`、`max_input_tokens`、`max_output_tokens`、`supports_*`、`source`、`deprecation_date`、`tool_use_system_prompt_tokens` 等。
+
+## 价格来源
+
+当前数据按以下官方页面核对（2026-10-09），以美元国际站价格为准：
+
+| 提供商 | 来源 | 备注 |
+| --- | --- | --- |
+| Anthropic | https://platform.claude.com/docs/en/about-claude/pricing | Fable 5.1 缓存读取为 0.025×，Opus 5.5 / Sonnet 5.5 为 0.05×，其余 0.1× |
+| OpenAI | https://developers.openai.com/api/docs/pricing | Priority 已更名 Fast；GPT-5.6 Sol 为促销价，至少持续到 2026-11-21 |
+| xAI | https://docs.x.ai/developers/pricing | ≥200k 输入进高档 |
+| DeepSeek | https://api-docs.deepseek.com/quick_start/pricing | 写高峰价；`deepseek-v4-flash`、`deepseek-v4-flash-vision-exp` 已退役，按 Flash 价计费 |
+| Z.AI | https://docs.z.ai/guides/overview/pricing | 国际站价格，与国内站 bigmodel.cn 的人民币价不同 |
+| Moonshot | 多个第三方汇总页一致（$3 / $0.30 / $15），未直接取到官方页 | Kimi K3 全上下文统一价，官方 ID `kimi-k3` |
 
 ## 完整示例
 
