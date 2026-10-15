@@ -1,19 +1,28 @@
 {
+  "gemini-4-argon": {
+    "litellm_provider": "gemini",
+    "mode": "chat",
+    "input_cost_per_token": 4e-06,
+    "output_cost_per_token": 2e-05,
+    "cache_read_input_token_cost": 2e-07,
+    "context_window": 1000000,
+    "max_output_tokens": 1000000
+  },
   "gemini-3.8-flash": {
     "litellm_provider": "gemini",
     "mode": "chat",
-    "input_cost_per_token": 7.5e-7,
-    "output_cost_per_token": 3.75e-6,
-    "cache_read_input_token_cost": 7.5e-8,
-    "input_cost_per_token_batches": 3.75e-7,
-    "output_cost_per_token_batches": 1.875e-6,
-    "cache_read_input_token_cost_batches": 3.75e-8,
-    "input_cost_per_token_flex": 3.75e-7,
-    "output_cost_per_token_flex": 1.875e-6,
-    "cache_read_input_token_cost_flex": 3.75e-8,
-    "input_cost_per_token_priority": 1.35e-6,
-    "output_cost_per_token_priority": 6.75e-6,
-    "cache_read_input_token_cost_priority": 1.35e-7
+    "input_cost_per_token": 7.5e-07,
+    "output_cost_per_token": 3.75e-06,
+    "cache_read_input_token_cost": 7.5e-08,
+    "input_cost_per_token_batches": 3.75e-07,
+    "output_cost_per_token_batches": 1.875e-06,
+    "cache_read_input_token_cost_batches": 3.75e-08,
+    "input_cost_per_token_flex": 3.75e-07,
+    "output_cost_per_token_flex": 1.875e-06,
+    "cache_read_input_token_cost_flex": 3.75e-08,
+    "input_cost_per_token_priority": 1.35e-06,
+    "output_cost_per_token_priority": 6.75e-06,
+    "cache_read_input_token_cost_priority": 1.35e-07
   },
   "claude-sonnet-5-5": {
     "cache_creation_input_token_cost": 2.5e-06,
@@ -406,4 +415,4 @@
       "search_context_size_medium": 0.01
     }
   }
-}
+}\n
